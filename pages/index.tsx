@@ -17,6 +17,7 @@ export default function Home() {
   const [quarter, setQuarter] = useState(1);
   const [shotClock, setShotClock] = useState(25);
   const [toggle, setToggle] = useState(true);
+  const [quarterDisplay, setQuarterDisplay] = useState("1st")
   const audioRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure()
   const {
@@ -31,7 +32,7 @@ export default function Home() {
     restart,
   } = useTimer({ expiryTimestamp: time, onExpire: () => {
     play();
-    restart(time, false);
+    quarterName(quarter);
     setQuarter(quarter+1);
   } });
 
@@ -43,6 +44,21 @@ export default function Home() {
   const play = () => {
     if (audioRef.current) {
       audioRef.current.play()
+    }
+  }
+
+  function quarterName(quarter: number){
+    if (quarter + 1 === 1) {
+      setQuarterDisplay("1st")
+    }
+    else if (quarter + 1 === 2) {
+      setQuarterDisplay("2nd")
+    }
+    else if (quarter + 1 === 3) {
+      setQuarterDisplay("3rd")
+    }
+    else if (quarter + 1 === 4) {
+      setQuarterDisplay("4th")
     }
   }
 
@@ -63,7 +79,7 @@ export default function Home() {
       <Box textAlign="center" p="8" border="3px solid yellow">
         <Text fontSize="4vw">{teamName1}</Text>
         <Heading color="red" fontSize="500px">{scoreHome < 10 && scoreHome >=0 ? `0${scoreHome}`: scoreHome}</Heading>
-        <Flex mt="2vh" justifyContent="space-evenly">
+        <Flex mt="2vh" justifyContent="center">
           <Button size="xs" bg="transparent" border="solid 2px white" onClick={(e)=>setScoreHome(scoreHome+1)}>+ 1</Button>
           <Button size="xs" bg="transparent" border="solid 2px white" onClick={(e)=>setScoreHome(scoreHome+2)}>+ 2</Button>
           <Button size="xs" bg="transparent" border="solid 2px white" onClick={(e)=>setScoreHome(scoreHome+3)}>+ 3</Button>
@@ -87,6 +103,7 @@ export default function Home() {
         <Heading color="yellow" fontSize="360px">{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10? `0${seconds}`: seconds}</Heading>
         <Flex textAlign="center" justifyContent="center" alignItems="center">
           {toggle? <ArrowRightIcon boxSize={100}/> : <ArrowLeftIcon boxSize={100}/>}
+          <Text ml="2vw" fontSize="100">{quarterDisplay}</Text>
         </Flex>
         <Heading color="yellow" fontSize="300px">{shotClock}</Heading>
         <Button size="xs" bg="transparent" border="solid 2px white" onClick={()=>setShotClock(24)}>Reset 24</Button>
@@ -95,7 +112,7 @@ export default function Home() {
       <Box textAlign="center" py="2vh" border="3px solid yellow" p="4">
         <Text fontSize="4vw">{teamName2}</Text>
         <Heading color="red" mt="4vh" fontSize="500px">{scoreGuest < 10 && scoreGuest >=0 ? `0${scoreGuest}`: scoreGuest}</Heading>
-        <Flex mt="2vh" justifyContent="space-evenly">
+        <Flex mt="2vh" justifyContent="center">
           <Button size="xs" bg="transparent" border="solid 2px white" onClick={(e)=>setScoreGuest(scoreGuest+1)}>+ 1</Button>
           <Button size="xs" bg="transparent" border="solid 2px white" onClick={(e)=>setScoreGuest(scoreGuest+2)}>+ 2</Button>
           <Button size="xs" bg="transparent" border="solid 2px white" onClick={(e)=>setScoreGuest(scoreGuest+3)}>+ 3</Button>
