@@ -6,7 +6,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons'
 export default function Home() {
   const time = new Date();
   time.setSeconds(time.getSeconds() + (60 * 10));
-  const [scoreHome, setScoreHome] = useState(0);
+  const [scoreHome, setScoreHome] = useState(0); 
   const [scoreGuest, setScoreGuest] = useState(0);
   const [teamName1, setTeamName1] = useState("")
   const [teamName2, setTeamName2] = useState("")
@@ -18,14 +18,14 @@ export default function Home() {
   const [shotClock, setShotClock] = useState(25);
   const [toggle, setToggle] = useState(true);
   const [quarterDisplay, setQuarterDisplay] = useState("1st")
+  const [togglePlay, setTogglePlay] = useState(true)
+  const [started, setStarted] = useState(false)
   const audioRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure()
+
   const {
     seconds,
     minutes,
-    hours,
-    days,
-    isRunning,
     start,
     pause,
     resume,
@@ -37,6 +37,7 @@ export default function Home() {
   } });
 
   useEffect(() => {
+    document.getElementById("commands").focus();
     restart(time, false);
     pause();
   }, [])
@@ -71,6 +72,49 @@ export default function Home() {
       play();
     }
   }, [seconds])
+
+  function handleKeyDown(input : string) {  
+    if (input[input.length-1] === ' '){
+      if (togglePlay){
+        if (started === false){
+          start()
+          setStarted(true)
+        }
+        else{
+          resume();
+        }
+      }
+      else{
+        pause();
+      }
+      setTogglePlay(!togglePlay)
+    }
+    else if (input[input.length-1].toLowerCase() === 'q'){
+      setShotClock(24)
+    }
+    else if (input[input.length-1].toLowerCase() === 'w'){
+      setShotClock(14)
+    }
+    else if (input[input.length-1].toLowerCase() === '1'){
+      setScoreHome(scoreHome+1)
+    }
+    else if (input[input.length-1].toLowerCase() === '2'){
+      setScoreHome(scoreHome-1)
+    }
+    else if (input[input.length-1].toLowerCase() === '3'){
+      setScoreGuest(scoreGuest+1)
+    }
+    else if (input[input.length-1].toLowerCase() === '4'){
+      setScoreGuest(scoreGuest-1)
+    }
+    else if (input[input.length-1].toLowerCase() === '!'){
+      restart(time, false);
+      setShotClock(24)
+    }
+    else if (input[input.length-1].toLowerCase() === 'b'){
+      setToggle(!toggle)
+    }
+  }
   
 
   return (
@@ -135,12 +179,7 @@ export default function Home() {
     </Flex>
     <Flex position="absolute" w="100vw" justifyContent="center" >
       <Input border="none" w="10px" textAlign="center" onChange={(e)=>setTeamName1(e.target.value)} type="text"/>
-      <Button size="xs" bg="transparent" border="solid 2px white" onClick={start}>Start</Button>
-      <Button size="xs" bg="transparent" border="solid 2px white" onClick={pause}>Pause</Button>
-      <Button size="xs" bg="transparent" border="solid 2px white" onClick={resume}>Resume</Button>
-      <Button size="xs" bg="transparent" border="solid 2px white" onClick={onOpen}>Restart</Button>
-      <Button size="xs" bg="transparent" border="solid 2px white" onClick={(e)=>setToggle(!toggle)}>Ball</Button>
-      <Button size="xs" bg="transparent" border="solid 2px white" onClick={play}>Play Buzzer</Button>
+      <Input border="solid 1px yellow" id="commands" focus w="100px" textAlign="center" onChange={e=>{handleKeyDown(e.target.value); e.target.value=''}} type="text"/>
       <Input border="none" w="10px" textAlign="center" onChange={(e)=>setTeamName2(e.target.value)} type="text"/>
       <audio ref={audioRef} src='/audio/timeout.mp3' />
     </Flex>
